@@ -1,5 +1,5 @@
 {
-    "name": "ruudk/payment-mollie-bundle",
+    "name": "merlijnbruijnes/mrb-mollie",
     "type": "symfony-bundle",
     "description": "A Symfony2 Bundle that provides access to the Mollie API. Based on JMSPaymentCoreBundle.",
     "keywords": ["payment", "mollie"],
