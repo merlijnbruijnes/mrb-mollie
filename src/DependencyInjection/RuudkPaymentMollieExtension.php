@@ -44,10 +44,11 @@ class RuudkPaymentMollieExtension extends Extension
         $mollieMethod = 'mollie_' . $method;
 
         $definition = new Definition();
-        $definition->setClass(sprintf('%%ruudk_payment_mollie.form.%s_type.class%%', $method));
+        $definition->setClass('%ruudk_payment_mollie.form.mollie_type.class%');
         $definition->addArgument($mollieMethod);
 
         if($method === 'ideal') {
+            $definition->setClass('%ruudk_payment_mollie.form.ideal_type.class%');
             $definition->addArgument(sprintf(
                 '%%ruudk_payment_mollie.ideal.issuers.%s%%',
                 substr($config['api_key'], 0, 4) == 'live' ? 'live' : 'test'

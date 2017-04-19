@@ -2,12 +2,11 @@
 
 namespace Ruudk\Payment\MollieBundle\Form;
 
-use Omnipay\Common\Issuer;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Omnipay\Common\Issuer;
 
-class IdealType extends NamedType
+class IdealType extends MollieType
 {
     /**
      * @var Issuer[]
@@ -15,11 +14,14 @@ class IdealType extends NamedType
     protected $issuers = array();
 
     /**
+     * @param string $name
      * @param array  $issuers
      */
     public function __construct($name, array $issuers)
     {
         parent::__construct($name);
+
+        $this->name = $name;
 
         foreach ($issuers as $issuerId => $issuerName) {
             $this->issuers[] = new Issuer($issuerId, $issuerName, 'ideal');
@@ -30,17 +32,16 @@ class IdealType extends NamedType
     {
         $banks = array();
         $defaultBank = null;
-
-        foreach ($this->issuers as $issuer) {
-            if ('ideal' !== $issuer->getPaymentMethod()) {
+        foreach($this->issuers AS $issuer) {
+            if('ideal' !== $issuer->getPaymentMethod()) {
                 continue;
             }
 
-            $banks[$issuer->getName()] = $issuer->getId();
+            $banks[$issuer->getId()] = $issuer->getName();
             $defaultBank = $issuer->getId();
         }
 
-        if (1 !== count($banks)) {
+        if(1 !== count($banks)) {
             $defaultBank = null;
         }
 
@@ -48,12 +49,11 @@ class IdealType extends NamedType
             $defaultBank = $options['bank'];
         }
 
-        $builder->add('bank', ChoiceType::class, array(
-            'label'             => 'ruudk_payment_mollie.ideal.bank.label',
-            'data'              => $defaultBank,
-            'placeholder'       => 'ruudk_payment_mollie.ideal.bank.empty_value',
-            'choices'           => $banks,
-            'choices_as_values' => true,
+        $builder->add('bank', 'choice', array(
+            'label'       => 'ruudk_payment_mollie.ideal.bank.label',
+            'data'        => $defaultBank,
+            'empty_value' => 'ruudk_payment_mollie.ideal.bank.empty_value',
+            'choices'     => $banks
         ));
     }
 
@@ -65,8 +65,8 @@ class IdealType extends NamedType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-                                   'bank' => ''
-                               ));
+            'bank' => ''
+        ));
 
         $resolver->setAllowedTypes('bank', 'string');
     }

@@ -14,13 +14,6 @@ use Psr\Log\LoggerInterface;
 use Omnipay\Mollie\Gateway;
 use Ruudk\Payment\MollieBundle\Exception\IdealIssuerTemporarilyUnavailableException;
 use Ruudk\Payment\MollieBundle\Exception\MollieTemporarilyUnavailableException;
-use Ruudk\Payment\MollieBundle\Form\CreditcardType;
-use Ruudk\Payment\MollieBundle\Form\IdealType;
-use Ruudk\Payment\MollieBundle\Form\KbcType;
-use Ruudk\Payment\MollieBundle\Form\MistercashType;
-use Ruudk\Payment\MollieBundle\Form\SofortType;
-use Ruudk\Payment\MollieBundle\Form\BanktransferType;
-use Ruudk\Payment\MollieBundle\Form\BelfiusType;
 
 class DefaultPlugin extends AbstractPlugin
 {
@@ -49,12 +42,7 @@ class DefaultPlugin extends AbstractPlugin
 
     public function processes($name)
     {
-        return $name !== IdealType::class &&
-               $name !== 'mollie_ideal' &&
-               (
-                   preg_match('/Mollie/', $name) ||
-                   preg_match('/^mollie_/', $name)
-               );
+        return $name !== 'mollie_ideal' && preg_match('/^mollie_/', $name);
     }
 
     public function approveAndDeposit(FinancialTransactionInterface $transaction, $retry)
@@ -86,10 +74,6 @@ class DefaultPlugin extends AbstractPlugin
 
                     if(!empty($data['details']['consumerAccount'])) {
                         $transaction->getExtendedData()->set('consumer_account_number', $data['details']['consumerAccount']);
-                    }
-
-                    if (!empty($data['details']['cardFingerprint'])) {
-                        $transaction->getExtendedData()->set('card_fingerprint', $data['details']['cardFingerprint']);
                     }
                 }
 
@@ -252,23 +236,6 @@ class DefaultPlugin extends AbstractPlugin
      */
     protected function getMethod(FinancialTransactionInterface $transaction)
     {
-        switch ($transaction->getPayment()->getPaymentInstruction()->getPaymentSystemName()) {
-            case IdealType::class:
-                return 'ideal';
-            case CreditcardType::class:
-                return 'creditcard';
-            case MistercashType::class:
-                return 'mistercash';
-            case SofortType::class:
-                return 'sofort';
-            case BanktransferType::class:
-                return 'banktransfer';
-            case BelfiusType::class:
-                return 'belfius';
-            case KbcType::class:
-                return 'kbc';
-        }
-
         return substr($transaction->getPayment()->getPaymentInstruction()->getPaymentSystemName(), 7);
     }
 }

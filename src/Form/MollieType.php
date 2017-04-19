@@ -4,7 +4,7 @@ namespace Ruudk\Payment\MollieBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 
-abstract class NamedType extends AbstractType
+class MollieType extends AbstractType
 {
     /**
      * @var string
@@ -20,7 +20,7 @@ abstract class NamedType extends AbstractType
     }
 
     /**
-     * {@inheritdoc}
+     * @return string
      */
     public function getName()
     {
